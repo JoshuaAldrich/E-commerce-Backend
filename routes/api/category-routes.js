@@ -20,18 +20,24 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   // find one category by its `id` value
   // be sure to include its associated Products
-  Category.findOne({
-    where: {
-      id: req.params.id,
-    },
-    include: {
-      model: Product,
-      attributes: ["id", "product_name", "price", "stock", "category_id"],
-    },
-  });
+  try {
+    let dbCategoryData = await Category.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "category_name"],
+      include: {
+        model: Product,
+        attributes: ["id", "product_name", "price", "stock", "category_id"],
+      },
+    });
+    res.json(dbCategoryData);
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 router.post("/", async (req, res) => {
